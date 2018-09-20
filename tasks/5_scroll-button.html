@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            position: relative;
+            height: 5000px;
+            background-image: linear-gradient(to bottom right, palegreen, greenyellow, lightgreen, lightpink, mediumpurple);
+        }
+
+        .scroll-button {
+            position: fixed;
+            right: 100px;
+            bottom: 100px;
+            width: 60px;
+            height: 60px;
+            color: darkgrey;
+            background: white;
+            font-size: 25px;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 50px darkgrey;
+        }
+
+        .scroll-button:hover {
+            box-shadow: 0 0 70px purple;
+        }
+
+        .scroll-button__content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="scroll-button hide">
+            <div class="scroll-button__content">↑</div>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+
+        const $window = $(window);
+        const $container = $('.container');
+        const scrollButton = ('.scroll-button');
+        const topY = '0px';
+        const delay = 2000;
+        const easing = 'swing';
+        const hideClass = 'hide';
+        let windowHeight = $window.outerHeight(true);
+
+        $window.on('scroll', toggleScrollButton);
+        $container.on('click', scrollButton, scrollToTop);
+
+        function scrollToTop() {
+            $('html')
+                .stop()
+                .animate(
+                    {
+                        scrollTop: topY
+                    },
+                    delay, easing
+                )
+        }
+
+        function toggleScrollButton() {
+            $(scrollButton).toggleClass(hideClass, $window.scrollTop() < windowHeight)
+        }
+    </script>
+</body>
+</html>

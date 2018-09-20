@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #484848;
+    }
+
+    .ball {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 80px;
+        height: 80px;
+        background: white;
+        border: 1px solid white;
+        border-radius: 40px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="ball" class="ball"></div>
+
+    <script>
+        const $document = $(document);
+        const $html = $('html');
+        const $el = $('#ball');
+        const $container = $('#container');
+
+        const ballWidth = $el.outerWidth();
+        const ballHeight = $el.outerHeight();
+
+        let topBorder;
+        let rightBorder;
+        let bottomBorder;
+        let leftBorder;
+
+        let elTop;
+        let elRight;
+        let elBottom;
+        let elLeft;
+
+        let timerId;
+
+        $document.on('meet-top-border:right', moveDownRight);
+        $document.on('meet-top-border:left', moveDownLeft);
+        $document.on('meet-right-border:up', moveUpLeft);
+        $document.on('meet-right-border:down', moveDownLeft);
+        $document.on('meet-bottom-border:right', moveUpRight);
+        $document.on('meet-bottom-border:left', moveUpLeft);
+        $document.on('meet-left-border:up', moveUpRight);
+        $document.on('meet-left-border:down', moveDownRight);
+
+        moveDownRight();
+
+        function moveDownRight() {
+            const direction = 'down-right';
+            cache($el);
+
+            clearInterval(timerId);
+            timerId = setInterval(() => {
+                setTopPosition($el, 'increase');
+                setLeftPosition($el, 'increase');
+                cache($el);
+                checkBorders(direction);
+            }, 5);
+        }
+
+        function moveUpRight() {
+            const direction = 'up-right';
+            cache($el);
+
+            clearInterval(timerId);
+            timerId = setInterval(() => {
+                setTopPosition($el, 'decrease');
+                setLeftPosition($el, 'increase');
+                cache($el);
+                checkBorders(direction);
+            }, 5);
+        }
+
+        function moveDownLeft() {
+            const direction = 'down-left';
+            cache($el);
+
+            clearInterval(timerId);
+            timerId = setInterval(() => {
+                setTopPosition($el, 'increase');
+                setLeftPosition($el, 'decrease');
+                cache($el);
+                checkBorders(direction);
+            }, 5);
+        }
+
+        function moveUpLeft() {
+            const direction = 'up-left';
+            cache($el);
+
+            clearInterval(timerId);
+            timerId = setInterval(() => {
+                setTopPosition($el, 'decrease');
+                setLeftPosition($el, 'decrease');
+                cache($el);
+                checkBorders(direction);
+            }, 5);
+        }
+
+        function cache(el) {
+            topBorder = $html.offset().top;
+            rightBorder = $html.offset().left + $document.outerWidth();
+            bottomBorder = $html.offset().top + $document.outerHeight();
+            leftBorder = $html.offset().left;
+
+            elTop = el.offset().top;
+            elRight = el.offset().left + ballWidth;
+            elBottom = el.offset().top + ballHeight;
+            elLeft = el.offset().left;
+        }
+
+        function setTopPosition(el, operation) {
+            let top;
+
+            if (operation === 'increase') {
+                top = elTop + 1;
+            } else if (operation === 'decrease') {
+                top = elTop - 1;
+            }
+
+            el.offset({
+                top: top
+            })
+        }
+
+        function setLeftPosition(el, operation) {
+            let left;
+
+            if (operation === 'increase') {
+                left = elLeft + 1;
+            } else if (operation === 'decrease') {
+                left = elLeft - 1;
+            }
+
+            el.offset({
+                left: left
+            })
+        }
+
+        function checkBorders(direction) {
+            if (elTop === topBorder) {
+                direction === 'up-right'
+                    ? $document.trigger('meet-top-border:right')
+                    : $document.trigger('meet-top-border:left');
+            } else if (elRight === rightBorder) {
+                direction === 'down-right'
+                    ? $document.trigger('meet-right-border:down')
+                    : $document.trigger('meet-right-border:up');
+            } else if (elBottom === bottomBorder) {
+                direction === 'down-right'
+                    ? $document.trigger('meet-bottom-border:right')
+                    : $document.trigger('meet-bottom-border:left');
+            } else if (elLeft === leftBorder) {
+                direction === 'down-left'
+                    ? $document.trigger('meet-left-border:down')
+                    : $document.trigger('meet-left-border:up');
+            }
+        }
+    </script>
+</body>
+
+</html>
